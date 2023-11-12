@@ -1,0 +1,85 @@
+.footer {
+  padding: 4rem 6rem;
+  background: rgb(17, 16, 16);
+  color: #ffff;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  text-align: start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: italic;
+}
+
+.top i {
+  color: #fff;
+  font-size: 2rem;
+  margin-left: 1rem;
+}
+
+.top i:hover {
+  color: rgb(137, 54, 103);
+}
+
+.bottom {
+  padding-top: 4rem;
+  text-align: start;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.bottom div {
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom h5 {
+  font-size: 2rem;
+  padding: 1rem 0 0.8rem 0;
+  font-family: I;
+  font-style: oblique;
+}
+
+.bottom a {
+  text-decoration: none;
+  color: oldlace;
+  padding-bottom: 0.4rem;
+  font-size: 1.1rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.bottom h1 {
+  font-size: 1.3rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-style: italic;
+  color: rgb(229, 32, 32);
+  margin: 2rem 2rem 0 0;
+}
+
+.bottom i {
+  font-size: 1.5rem;
+}
+
+.bottom i:hover {
+  color: rgb(11, 177, 20);
+  font-size: 1.5rem;
+}
+
+@media screen and (max-width: 850px) {
+  .footer {
+    padding: 4rem 2rem;
+  }
+
+  .footer i {
+    margin: 1rem 1rem 0 0;
+  }
+
+  .bottom div {
+    width: 50%;
+  }
+}
