@@ -10,4 +10,4 @@ public record BookRequestDto(
                 int semester) {
 }
 
-// List<String> batch is missing
+
