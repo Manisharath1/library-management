@@ -33,9 +33,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final UserRepository userRepository;
     private RSAKey rsaKey;
 
+    // Bean definition for UserDetailsService
     @Bean
     UserDetailsService userDetails() {
         return (username) -> {
@@ -44,6 +46,7 @@ public class SecurityConfig {
         };
     }
 
+    // Bean definition for AuthenticationManager
     @Bean
     AuthenticationManager authenticationManager() {
         var provider = new DaoAuthenticationProvider();
@@ -53,34 +56,44 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
+    // Bean definition for PasswordEncoder
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Bean definition for SecurityFilterChain
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
+                        // Permit access to Swagger UI and API documentation
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v1/library-management-api-docs/**")
                         .permitAll()
+                        // Permit certain public endpoints
                         .requestMatchers("/api/v1/user/create/**", "/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/batch/active").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/*/*/image/**").permitAll()
+                        // Authorization rules for specific endpoints based on user roles
                         .requestMatchers("/api/v1/user/**").hasAnyAuthority("SCOPE_ADMIN", "SCOPE_USER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/**").hasAuthority("SCOPE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/**").hasAuthority("SCOPE_ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/**").hasAuthority("SCOPE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasAuthority("SCOPE_ADMIN")
-                        .anyRequest()
-                        .authenticated())
+                        // All other requests must be authenticated
+                        .anyRequest().authenticated())
+                // Configure session management to be stateless
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Configure OAuth2 resource server with JWT handling
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                // Disable logout and enable HTTP basic authentication
                 .logout(logout -> logout.disable())
                 .httpBasic(Customizer.withDefaults());
+
         return http.build();
     }
 
+    // Bean definition for JWKSource
     @Bean
     JWKSource<SecurityContext> jwkSource() {
         rsaKey = Jwks.generateRsa();
@@ -88,13 +101,16 @@ public class SecurityConfig {
         return (jwkSelector, SecurityContext) -> jwkSelector.select(jwkSet);
     }
 
+    // Bean definition for JwtEncoder
     @Bean
     JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+    // Bean definition for JwtDecoder
     @Bean
     JwtDecoder jwtDecoder() throws JOSEException {
         return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
     }
 }
+
